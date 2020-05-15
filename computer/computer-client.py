@@ -1,7 +1,7 @@
+import socket
 import pickle
 import struct
-
-import socket
+import time
 
 RASPBERRY_PI_IP = '192.168.1.22'
 
@@ -19,8 +19,14 @@ def recv(s):
     return pickle.loads(data)
 
 
-def ask_input():
-    return input('Type message you want to send: ')
+def get_webcam_data():
+    None
+
+
+class Pixel:
+    def __init__(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
 
 
 if __name__ == "__main__":
@@ -28,9 +34,12 @@ if __name__ == "__main__":
     s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     s.connect((RASPBERRY_PI_IP, 9395))
 
-    # s is  now a "socket"
     while True:
-        data = ask_input()
-        send(s, data)
-        incoming_message = recv(s)
-        print(incoming_message)
+        # At the moment you, as a person, are giving the action here
+        x_val = input("X: ")
+        y_val = input("Y: ")
+        msg = Pixel(x_val, y_val)
+        send(s, msg)
+        print('Pixel placed at', msg.x, ',', msg.y)
+        incoming_state_data_accelero_and_gyro = recv(s)
+        print(f'Incoming data: {incoming_state_data_accelero_and_gyro}')
